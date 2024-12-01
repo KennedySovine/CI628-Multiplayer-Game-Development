@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class gameManager : MonoBehaviour
 {
     public static gameManager _instance;
-    public int player1Score;
-    public int player2Score;
+
     public bool isGameActive;
+
+    //[Header()]
 
     #region Singleton
 
@@ -37,8 +39,7 @@ public class gameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player1Score = 0;
-        player2Score = 0;
+
         isGameActive = true;
     }
 
@@ -48,18 +49,6 @@ public class gameManager : MonoBehaviour
         if (isGameActive)
         {
             // Game logic goes here
-        }
-    }
-
-    public void AddScore(int playerNumber, int score)
-    {
-        if (playerNumber == 1)
-        {
-            player1Score += score;
-        }
-        else if (playerNumber == 2)
-        {
-            player2Score += score;
         }
     }
 
