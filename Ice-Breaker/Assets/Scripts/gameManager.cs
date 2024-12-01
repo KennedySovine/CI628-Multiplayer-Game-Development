@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,10 @@ public class gameManager : MonoBehaviour
 
     public bool isGameActive;
 
-    //[Header()]
+    [Header("Game Objects")]
+    [SerializeField] private GameObject tilePrefab;
+    public GameObject[] player1Tiles = new GameObject[19];
+    public GameObject[] player2Tiles = new GameObject[19];
 
     #region Singleton
 
@@ -39,7 +43,6 @@ public class gameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         isGameActive = true;
     }
 
