@@ -1,0 +1,16 @@
+newmtl top
+Kd 0.3818478 0.9433962 0.1023496
+d 1
+
+newmtl insides
+Kd 1 0 0
+d 1
+
+newmtl outsides
+Kd 0.6009035 0 1
+d 1
+
+newmtl bot
+Kd 0 0.4412079 1
+d 1
+
