@@ -11,6 +11,8 @@ public class gameManager : MonoBehaviour
     public bool isGameActive;
 
     [Header("Game Objects")]
+    private float tileRadius = 30.00001f;
+    [SerializeField] private GameObject parentGroup;
     [SerializeField] private GameObject tilePrefab;
     public GameObject[] player1Tiles = new GameObject[19];
     public GameObject[] player2Tiles = new GameObject[19];
@@ -58,5 +60,32 @@ public class gameManager : MonoBehaviour
     public void EndGame()
     {
         isGameActive = false;
+    }
+
+    public void fillBoard(){
+        float xOffset = tileRadius * 1.5f;
+        float yOffset = tileRadius * Mathf.Sqrt(3);
+
+        for (int row = 0; row < rows; row++)
+        {
+            for (int col = 0; col < cols; col++)
+            {
+                // Offset odd columns to create staggered rows
+                float xPos = col * xOffset;
+                float yPos = row * yOffset;
+
+                if (col % 2 == 1)
+                {
+                    yPos += yOffset / 2;
+                }
+
+                Vector3 tilePosition = new Vector3(xPos, yPos, 0);
+                GameObject newTile = Instantiate(tilePrefab, tilePosition, Quaternion.identity);
+                newTile.transform.SetParent(parentGroup.transform);
+
+                // Optional: Rename tile for clarity
+                newTile.name = $"Tile_{row}_{col}";
+            }
+        }
     }
 }
