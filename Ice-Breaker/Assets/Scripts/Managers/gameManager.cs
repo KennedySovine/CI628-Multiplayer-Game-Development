@@ -11,9 +11,9 @@ public class gameManager : MonoBehaviour
     public bool isGameActive;
     public bool isTurn;
 
+    private tileManager tileManager;
+
     [Header("Game Objects")]
-    [SerializeField] private GameObject parentGroup;
-    [SerializeField] private GameObject tilePrefab;
     public GameObject[] player1Tiles = new GameObject[19];
     public GameObject[] player2Tiles = new GameObject[19];
 
@@ -33,6 +33,7 @@ public class gameManager : MonoBehaviour
     void Start()
     {
         isGameActive = true;
+        tileManager = GameObject.Find("Tiles").GetComponent<tileManager>();
     }
 
     // Update is called once per frame
