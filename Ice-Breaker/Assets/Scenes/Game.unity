@@ -10840,7 +10840,7 @@ GameObject:
   - component: {fileID: 1842787288}
   - component: {fileID: 1842787287}
   m_Layer: 0
-  m_Name: NetworkManager
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10890,7 +10890,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1842787287}
-    PlayerPrefab: {fileID: 0}
+    PlayerPrefab: {fileID: 2059838626607275267, guid: 6d4b2cb85c3d34280b8b2ad11573dca6, type: 3}
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: 4dc9a095267b249eb9ac1fdbcfa81773, type: 2}

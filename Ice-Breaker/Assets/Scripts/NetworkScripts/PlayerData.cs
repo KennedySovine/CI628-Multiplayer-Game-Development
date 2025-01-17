@@ -1,6 +1,7 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerData : MonoBehaviour
+public class PlayerData : NetworkBehaviour
 {
     public bool IsTurn { get; set; }
 
@@ -9,12 +10,22 @@ public class PlayerData : MonoBehaviour
     private void Start()
     {
         tileManager = FindObjectOfType<tileManager>();
-        GameManager.Instance.RegisterPlayer(this);
+
+        if (tileManager == null)
+        {
+            Debug.LogError("tileManager not found in the scene. Please ensure a tileManager instance exists.");
+            return;
+        }
+
+        if (IsOwner && IsServer)
+        {
+            Debug.Log($"Player {OwnerClientId} joined the game.");
+        }
     }
 
     private void Update()
     {
-        if (IsTurn)
+        if (IsTurn && IsOwner)
         {
             HandleMouseInput();
         }

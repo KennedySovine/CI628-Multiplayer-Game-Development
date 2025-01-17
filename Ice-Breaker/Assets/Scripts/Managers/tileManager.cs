@@ -9,8 +9,8 @@ public class tileManager : MonoBehaviour
     [SerializeField] private GameObject tileParent;
     private GameObject[] tileObjects;
 
-    private Rigidbody[] tileRigidbodies; // Track all 3D Rigidbody components
-    private GameObject highlightedTile;  // Current highlighted tile
+    private Rigidbody[] tileRigidbodies;
+    private GameObject highlightedTile;
 
     void Start()
     {
@@ -21,7 +21,7 @@ public class tileManager : MonoBehaviour
         for (int i = 0; i < tileObjects.Length; i++)
         {
             tileRigidbodies[i] = tileObjects[i].GetComponent<Rigidbody>();
-            tileRigidbodies[i].useGravity = false; // Turn off gravity initially
+            tileRigidbodies[i].useGravity = false; // Gravity off initially
         }
     }
 
@@ -30,9 +30,10 @@ public class tileManager : MonoBehaviour
         HandleTileHighlight();
     }
 
-    // Highlight the tile under the mouse cursor
     private void HandleTileHighlight()
     {
+        if (!gameManager) return;
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
@@ -42,16 +43,16 @@ public class tileManager : MonoBehaviour
             {
                 if (highlightedTile != null)
                 {
-                    SetTileHighlight(highlightedTile, false); // Turn off highlight on the previous tile
+                    SetTileHighlight(highlightedTile, false);
                 }
 
                 highlightedTile = tileUnderMouse;
-                SetTileHighlight(highlightedTile, true); // Highlight the new tile
+                SetTileHighlight(highlightedTile, true);
             }
         }
         else if (highlightedTile != null)
         {
-            SetTileHighlight(highlightedTile, false); // Turn off highlight if no tile is hit
+            SetTileHighlight(highlightedTile, false);
             highlightedTile = null;
         }
     }
@@ -65,18 +66,26 @@ public class tileManager : MonoBehaviour
         }
     }
 
-    // Trigger gravity when a valid tile is clicked
-    public void TriggerGravity()
+    public void HandleTileClick(GameObject tile)
+    {
+        Tile tileComponent = tile.GetComponent<Tile>();
+        if (highlightedTile == tile && !tileComponent.IsOccupied)
+        {
+            tileComponent.IsOccupied = true;
+            TriggerGravity();
+        }
+    }
+
+    private void TriggerGravity()
     {
         foreach (Rigidbody rb in tileRigidbodies)
         {
-            rb.useGravity = true; // Enable gravity
+            rb.useGravity = true;
         }
 
         StartCoroutine(CheckTileMotionCoroutine());
     }
 
-    // Check when tiles stop moving
     private IEnumerator CheckTileMotionCoroutine()
     {
         while (true)
@@ -85,7 +94,7 @@ public class tileManager : MonoBehaviour
 
             foreach (Rigidbody rb in tileRigidbodies)
             {
-                if (rb.velocity.magnitude > 0.1f) // If any tile is moving
+                if (rb.velocity.magnitude > 0.1f) // Tile is still moving
                 {
                     anyTileMoving = true;
                     break;
@@ -95,11 +104,11 @@ public class tileManager : MonoBehaviour
             if (!anyTileMoving)
             {
                 DisableGravity();
-                gameManager.StartNextTurn(); // Notify GameManager to start the next player's turn
-                yield break; // Stop checking
+                gameManager.StartNextTurn();
+                yield break;
             }
 
-            yield return new WaitForSeconds(0.1f); // Check every 0.1 seconds
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -108,16 +117,7 @@ public class tileManager : MonoBehaviour
         foreach (Rigidbody rb in tileRigidbodies)
         {
             rb.useGravity = false;
-            rb.velocity = Vector3.zero; // Stop motion
-        }
-    }
-
-    public void HandleTileClick(GameObject tile)
-    {
-        if (highlightedTile == tile && !tile.GetComponent<Tile>().IsOccupied)
-        {
-            tile.GetComponent<Tile>().IsOccupied = true; // Mark the tile as occupied
-            TriggerGravity(); // Start gravity
+            rb.velocity = Vector3.zero;
         }
     }
 }
