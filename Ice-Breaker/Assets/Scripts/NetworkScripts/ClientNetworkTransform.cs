@@ -1,6 +1,6 @@
 using Unity.Netcode.Components;
 
-public class ClientNetworkTransform : NetworkTransform
+public class ClientNetworkTransform : NetworkAnimator
 {
     protected override bool OnIsServerAuthoritative(){
         return false;

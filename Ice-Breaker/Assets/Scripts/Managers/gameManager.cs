@@ -1,53 +1,45 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class gameManager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public static gameManager Instance;
+    public static GameManager Instance;
 
-    public bool isGameActive;
-    public bool isTurn;
+    private Dictionary<int, PlayerData> playerEntities = new Dictionary<int, PlayerData>();
+    private int currentPlayerIndex;
 
-    private tileManager tileManager;
-
-    [Header("Game Objects")]
-    public GameObject[] player1Tiles = new GameObject[19];
-    public GameObject[] player2Tiles = new GameObject[19];
-
-    //Game manager is persistent across scenes
     private void Awake()
     {
-        if (Instance != null)
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
-        Instance = this;
-        DontDestroyOnLoad(gameObject); 
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void RegisterPlayer(PlayerData player)
     {
-        isGameActive = true;
-        tileManager = GameObject.Find("Tiles").GetComponent<tileManager>();
-    }
+        int playerId = playerEntities.Count;
+        playerEntities.Add(playerId, player);
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (isGameActive)
+        if (playerId == 0)
         {
-            // Game logic goes here
+            StartNextTurn(); // Start with the first player's turn
         }
     }
 
-    public void EndGame()
+    public void StartNextTurn()
     {
-        isGameActive = false;
-    }
+        currentPlayerIndex = (currentPlayerIndex + 1) % playerEntities.Count;
 
+        foreach (var player in playerEntities.Values)
+        {
+            player.IsTurn = false; // Disable all players
+        }
+
+        playerEntities[currentPlayerIndex].IsTurn = true; // Enable the next player
+    }
 }
