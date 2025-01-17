@@ -7,8 +7,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     private Dictionary<ulong, PlayerData> playerEntities = new Dictionary<ulong, PlayerData>();
-    private ulong currentPlayerId;
-    private bool isGameActive = false;
+    public ulong currentPlayerId;
+    public bool isGameActive = false;
     private NetworkManager networkManager;
 
     private void Awake()
@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
             networkManager.OnClientConnectedCallback += OnPlayerConnected;
             networkManager.OnClientDisconnectCallback += OnPlayerDisconnected;
         }
+        Time.timeScale = 0; // Pause the game until at least two players are connected
     }
 
     private void OnDestroy()
@@ -71,6 +72,7 @@ public class GameManager : MonoBehaviour
             // Start the game when at least two players are connected
             if (playerEntities.Count >= 2 && !isGameActive)
             {
+                Time.timeScale = 1; // Resume the game
                 isGameActive = true;
                 StartNextTurn();
             }
@@ -82,6 +84,7 @@ public class GameManager : MonoBehaviour
         if (playerEntities.ContainsKey(clientId))
         {
             playerEntities.Remove(clientId);
+            Time.timeScale = 0;
             Debug.Log($"Player {clientId} disconnected.");
         }
     }
@@ -99,6 +102,8 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log($"It's now Player {currentPlayerId}'s turn.");
+        FindObjectOfType<UIManager>().UpdateTurnIndicator(); // Notify UIManager
+        Time.timeScale = 0; //Pause game until play is made.
     }
 
     private ulong GetNextPlayerId(ulong currentId)
@@ -106,10 +111,5 @@ public class GameManager : MonoBehaviour
         var keys = new List<ulong>(playerEntities.Keys);
         int index = keys.IndexOf(currentId);
         return keys[(index + 1) % keys.Count];
-    }
-
-    public void hideSM()
-    {
-        GameObject.Find("StartMenu").SetActive(false);
     }
 }
