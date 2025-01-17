@@ -77,7 +77,6 @@ public class tileManager : MonoBehaviour
         if (highlightedTile == tile && !tileComponent.IsOccupied)
         {
             tileComponent.IsOccupied = true;
-            Time.timeScale = 1; // Resume the game
             enableMesh();
             TriggerGravity();
         }
@@ -98,7 +97,6 @@ public class tileManager : MonoBehaviour
         yield return new WaitForSeconds(5f);
         DisableGravity();
         disableMesh();
-        Time.timeScale = 0; // Pause the game
         gameManager.StartNextTurn();
     }
 
@@ -112,14 +110,18 @@ public class tileManager : MonoBehaviour
         }
     }
 
-    private void enableMesh(){
-        foreach (GameObject tileObject in tileObjects){
+    private void enableMesh()
+    {
+        foreach (GameObject tileObject in tileObjects)
+        {
             tileObject.GetComponent<MeshCollider>().enabled = true;
         }
     }
 
-    private void disableMesh(){
-        foreach (GameObject tileObject in tileObjects){
+    private void disableMesh()
+    {
+        foreach (GameObject tileObject in tileObjects)
+        {
             tileObject.GetComponent<MeshCollider>().enabled = false;
         }
     }

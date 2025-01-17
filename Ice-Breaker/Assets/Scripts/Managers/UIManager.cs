@@ -12,29 +12,22 @@ public class UIManager : MonoBehaviour
 
     private Text turnIndicatorText;
 
-    private ulong currentPlayerId = 0;
+    private ulong PlayerId = 0;
 
     void Start()
     {
+        PlayerId = gameManager.currentPlayerId;
         gameManager = FindObjectOfType<GameManager>();
         turnIndicatorText = turnIndicator.GetComponent<Text>();
-        UpdateTurnIndicator();
+        UpdateTurnIndicator(PlayerId);
     }
 
-    void Update()
-    {
-        if (currentPlayerId != gameManager.currentPlayerId)
-        {
-            currentPlayerId = gameManager.currentPlayerId;
-            UpdateTurnIndicator();
-        }
-    }
 
-    public void UpdateTurnIndicator()
+    public void UpdateTurnIndicator(ulong currentPlayerID)
     {
         if (gameManager.isGameActive)
         {
-            if (currentPlayerId == gameManager.currentPlayerId)
+            if (PlayerId == currentPlayerID)
             {
                 turnIndicatorText.text = "It's your turn";
             }
@@ -42,10 +35,6 @@ public class UIManager : MonoBehaviour
             {
                 turnIndicatorText.text = "It is the other player's turn";
             }
-        }
-        else
-        {
-            turnIndicator.SetActive(false);
         }
     }
 }
