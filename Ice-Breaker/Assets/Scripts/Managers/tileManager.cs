@@ -110,14 +110,18 @@ public class tileManager : MonoBehaviour
         }
     }
 
-    private void enableMesh(){
-        foreach (GameObject tileObject in tileObjects){
+    private void enableMesh()
+    {
+        foreach (GameObject tileObject in tileObjects)
+        {
             tileObject.GetComponent<MeshCollider>().enabled = true;
         }
     }
 
-    private void disableMesh(){
-        foreach (GameObject tileObject in tileObjects){
+    private void disableMesh()
+    {
+        foreach (GameObject tileObject in tileObjects)
+        {
             tileObject.GetComponent<MeshCollider>().enabled = false;
         }
     }
