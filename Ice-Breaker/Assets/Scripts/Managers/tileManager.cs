@@ -7,7 +7,7 @@ public class tileManager : MonoBehaviour
     private GameManager gameManager;
 
     [SerializeField] private GameObject tileParent;
-    private GameObject[] tileObjects;
+    public GameObject[] tileObjects;
 
     private Rigidbody[] tileRigidbodies;
     private GameObject highlightedTile;
@@ -22,7 +22,10 @@ public class tileManager : MonoBehaviour
         {
             tileRigidbodies[i] = tileObjects[i].GetComponent<Rigidbody>();
             tileRigidbodies[i].useGravity = false; // Gravity off initially
+            tileRigidbodies[i].isKinematic = true; // Kinematic off initially
         }
+
+        //disableMesh();
     }
 
     void Update()
@@ -32,6 +35,8 @@ public class tileManager : MonoBehaviour
 
     private void HandleTileHighlight()
     {
+        GameObject startMenu = GameObject.Find("StartMenu");
+        if (startMenu != null && startMenu.activeSelf) return;
         if (!gameManager) return;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -72,6 +77,7 @@ public class tileManager : MonoBehaviour
         if (highlightedTile == tile && !tileComponent.IsOccupied)
         {
             tileComponent.IsOccupied = true;
+            enableMesh();
             TriggerGravity();
         }
     }
@@ -88,28 +94,10 @@ public class tileManager : MonoBehaviour
 
     private IEnumerator CheckTileMotionCoroutine()
     {
-        while (true)
-        {
-            bool anyTileMoving = false;
-
-            foreach (Rigidbody rb in tileRigidbodies)
-            {
-                if (rb.velocity.magnitude > 0.1f) // Tile is still moving
-                {
-                    anyTileMoving = true;
-                    break;
-                }
-            }
-
-            if (!anyTileMoving)
-            {
-                DisableGravity();
-                gameManager.StartNextTurn();
-                yield break;
-            }
-
-            yield return new WaitForSeconds(0.1f);
-        }
+        yield return new WaitForSeconds(5f);
+        DisableGravity();
+        disableMesh();
+        gameManager.StartNextTurn();
     }
 
     private void DisableGravity()
@@ -118,6 +106,19 @@ public class tileManager : MonoBehaviour
         {
             rb.useGravity = false;
             rb.velocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
+    }
+
+    private void enableMesh(){
+        foreach (GameObject tileObject in tileObjects){
+            tileObject.GetComponent<MeshCollider>().enabled = true;
+        }
+    }
+
+    private void disableMesh(){
+        foreach (GameObject tileObject in tileObjects){
+            tileObject.GetComponent<MeshCollider>().enabled = false;
         }
     }
 }

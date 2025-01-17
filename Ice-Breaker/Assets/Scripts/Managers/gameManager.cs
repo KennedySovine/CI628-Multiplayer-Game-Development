@@ -1,14 +1,15 @@
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections.Generic;
 
-public class GameManager : NetworkBehaviour
+public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
     private Dictionary<ulong, PlayerData> playerEntities = new Dictionary<ulong, PlayerData>();
     private ulong currentPlayerId;
     private bool isGameActive = false;
+    private NetworkManager networkManager;
 
     private void Awake()
     {
@@ -22,35 +23,52 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public override void OnNetworkSpawn()
+    private void Start()
     {
-        if (IsServer)
+        // Find the NetworkManager by name
+        GameObject networkManagerObject = GameObject.Find("NetworkManager");
+        if (networkManagerObject == null)
         {
-            // Listen for player connections
-            NetworkManager.Singleton.OnClientConnectedCallback += OnPlayerConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback += OnPlayerDisconnected;
+            Debug.LogError("NetworkManager GameObject not found! Please ensure it exists in the scene.");
+            return;
+        }
+
+        networkManager = networkManagerObject.GetComponent<NetworkManager>();
+        if (networkManager == null)
+        {
+            Debug.LogError("NetworkManager component not found on the NetworkManager GameObject!");
+            return;
+        }
+
+        // Register network callbacks (only if running as the server)
+        if (networkManager.IsServer)
+        {
+            networkManager.OnClientConnectedCallback += OnPlayerConnected;
+            networkManager.OnClientDisconnectCallback += OnPlayerDisconnected;
         }
     }
 
     private void OnDestroy()
     {
-        if (NetworkManager.Singleton != null && IsServer)
+        // Unregister network callbacks
+        if (networkManager != null && networkManager.IsServer)
         {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnPlayerConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= OnPlayerDisconnected;
+            networkManager.OnClientConnectedCallback -= OnPlayerConnected;
+            networkManager.OnClientDisconnectCallback -= OnPlayerDisconnected;
         }
     }
 
     private void OnPlayerConnected(ulong clientId)
     {
         Debug.Log($"Player {clientId} connected.");
-        if (IsServer)
+
+        if (networkManager.IsServer)
         {
-            // Initialize PlayerData for the newly connected client
+            // Initialize player data for the newly connected client
             PlayerData newPlayer = new PlayerData { IsTurn = false };
             playerEntities.Add(clientId, newPlayer);
 
-            // Start the game once enough players are connected
+            // Start the game when at least two players are connected
             if (playerEntities.Count >= 2 && !isGameActive)
             {
                 isGameActive = true;
@@ -88,5 +106,10 @@ public class GameManager : NetworkBehaviour
         var keys = new List<ulong>(playerEntities.Keys);
         int index = keys.IndexOf(currentId);
         return keys[(index + 1) % keys.Count];
+    }
+
+    public void hideSM()
+    {
+        GameObject.Find("StartMenu").SetActive(false);
     }
 }
